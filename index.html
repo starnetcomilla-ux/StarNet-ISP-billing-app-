@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StarNet ISP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#cfe0f0;font-family:'Hind Siliguri',sans-serif;color:#10324a}
+.app{max-width:1000px;margin:auto;background:#eef5fc;min-height:100vh}
+.hd{background:linear-gradient(90deg,#08334d,#0b4766);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.hd h1{margin:0;font-size:26px;line-height:1.1}.hd small{opacity:.85}
+.own{text-align:center;font-size:12px;font-weight:700}.own i{font-size:30px;display:block}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 14px 8px}
+.tile{border:0;border-radius:12px;padding:12px 4px;color:#fff;font:600 14px 'Hind Siliguri',sans-serif;cursor:pointer;background:linear-gradient(#0e5068,#0a3d54);box-shadow:0 3px 6px #0003}
+.tile i{display:block;font-size:24px;margin-bottom:4px}
+.tile.on{background:linear-gradient(#2b8cff,#0b57d0)}
+.tile.due{background:linear-gradient(#ef3b3b,#c4161c)}
+.sr{display:flex;gap:8px;padding:6px 14px}
+.sr input{flex:1;border:1px solid #cfe0f0;border-radius:8px;padding:10px 12px;font:15px 'Hind Siliguri',sans-serif;min-width:0}
+.btn{border:0;border-radius:8px;background:#1565e8;color:#fff;padding:10px 16px;font:600 15px 'Hind Siliguri',sans-serif;cursor:pointer}
+.btn.g{background:#1fa35a}.btn.s{padding:4px 10px;font-size:12px}
+.pad{padding:8px 14px}
+.wel{border-radius:12px;padding:16px;color:#fff;background:linear-gradient(90deg,#0a4fb5,#1f86f0);display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 8px #0003}
+.wel h2{margin:0;font-size:24px}.wel i.big{font-size:44px;margin-right:14px}
+.dt{border:1px solid #fff8;border-radius:10px;padding:6px 12px;font-size:13px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sc{border-radius:12px;padding:12px 6px;text-align:center;border:1px solid}
+.sc i{font-size:26px}.sc small{display:block;font-weight:600;margin-top:2px}.sc b{font-size:22px;display:block}.sc span{font-size:12px}
+.s1{background:#dcecff;border-color:#8ec1ff;color:#0b57d0}.s2{background:#dcf7e6;border-color:#8be0ae;color:#14803f}
+.s3{background:#ffe1e1;border-color:#ff9c9c;color:#c4161c}.s4{background:#fff0c9;border-color:#ffd36b;color:#b86e00}
+.s1 b,.s2 b,.s3 b,.s4 b{color:#10324a}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}.sc b{font-size:16px}.tile{font-size:12px}}
+.pn{background:#fff;border-radius:12px;box-shadow:0 3px 8px #0002;overflow:hidden}
+.pn h3{margin:0;padding:10px 12px;background:#0a3d54;color:#fff;font-size:16px;display:flex;justify-content:space-between;align-items:center}
+.pn.red h3{background:linear-gradient(90deg,#c4161c,#ef3b3b)}
+.pn .in{padding:10px 12px}
+.bd{background:#fff;color:#c4161c;border-radius:20px;padding:0 10px;font-size:13px}
+.t{width:100%;border-collapse:collapse;font-size:13px}
+.t th{background:#e5f0fa;text-align:left;padding:6px 8px}.t td{padding:6px 8px;border-bottom:1px solid #e4edf5}
+.pn.red .t td{background:#fff4f4}.t .gn{color:#14803f;font-weight:700}.t .rd{color:#c4161c;font-weight:700}
+.tw{overflow-x:auto}
+.cv{position:relative;height:210px}
+.ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;font-weight:700;font-size:22px;line-height:1}
+.ctr small{font-size:11px;font-weight:500}
+.lg{display:flex;flex-direction:column;gap:8px;justify-content:center;font-size:14px}
+.lg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px}
+.qa{border-radius:12px;padding:10px;background:linear-gradient(#27b36a,#16874a);color:#fff}
+.qa h3{margin:0 0 8px;font-size:16px}
+.qg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qb{border:0;border-radius:10px;padding:10px 2px;background:#e6f2ff;font:600 12px 'Hind Siliguri',sans-serif;cursor:pointer;color:#10324a}
+.qb i{display:block;font-size:24px;margin-bottom:3px}
+.nt{border:1px solid #b9d8f5;background:#f2f9ff;border-radius:12px;padding:10px 12px;font-size:13px}
+.nt li{list-style:none;margin:3px 0}.nt li:before{content:'\2714 ';color:#1fa35a}.nt ul{margin:4px 0 0;padding:0}
+.ft{margin-top:16px;background:linear-gradient(90deg,#08334d,#0b4766);color:#fff;padding:12px 16px;font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.ov{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
+.ov.on{display:flex}
+.md{background:#fff;border-radius:14px;padding:16px;width:100%;max-width:380px}
+.md h3{margin:0 0 10px}.md label{display:block;font-size:13px;margin-top:8px;font-weight:600}
+.md input,.md select{width:100%;padding:9px;border:1px solid #c5d8ea;border-radius:8px;font:15px 'Hind Siliguri',sans-serif}
+.md .r{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+select.m{padding:8px;border-radius:8px;border:1px solid #c5d8ea;font:14px 'Hind Siliguri',sans-serif}
+#lg{background:#0b3a53}.own a{cursor:pointer;margin:0 6px;font-size:16px}.own a i{font-size:16px;display:inline}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hd">
+    <div><h1><i class="fa-solid fa-wifi"></i> StarNet ISP</h1><small>ISP Billing &amp; Management System</small></div>
+    <div class="own" id="own"></div>
+  </div>
+  <div class="menu" id="menu"></div>
+  <div class="sr">
+    <input id="gs" placeholder="গ্রাহক খুঁজুন (নাম বা আইডি দিয়ে...)" oninput="Q=this.value;go('customer')">
+    <button class="btn" onclick="go('customer')"><i class="fa-solid fa-search"></i> খুঁজুন</button>
+  </div>
+  <div id="view" class="pad"><p style="text-align:center;padding:30px">ডেটা লোড হচ্ছে...</p></div>
+  <div class="ft"><span>StarNet ISP Billing System v1.0</span><span>Developed for StarNet ISP | Powered by Google Sheets</span></div>
+</div>
+<div class="ov on" id="lg"><div class="md"><h3><i class="fa-solid fa-wifi"></i> StarNet ISP লগিন</h3>
+<label>ইউজারনেম</label><input id="lu" autocapitalize="off" autocomplete="username">
+<label>পাসওয়ার্ড</label><input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+<div class="r"><button class="btn" onclick="doLogin()">লগিন</button></div></div></div>
+<div class="ov" id="ov"><div class="md" id="md"></div></div>
+
+<script>
+var D, V = 'dash', Q = '', CH = [], RL = [], TK = null, U = null, MF = '';
+var T = [['dash','fa-house','ড্যাশবোর্ড'],['customer','fa-users','গ্রাহক'],['package','fa-box','প্যাকেজ'],['billing','fa-calendar-days','মাসিক বিল'],
+         ['payment','fa-credit-card','পেমেন্ট'],['due','fa-clock-rotate-left','বকেয়া হিসাব'],['reminder','fa-bell','রিমাইন্ডার'],['report','fa-chart-simple','রিপোর্ট']];
+var $ = function (i) { return document.getElementById(i); };
+var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+var fm = function (n) { return '৳ ' + Number(n).toLocaleString('en-IN'); };
+var cid = function (c) { return c.id || ('R' + c.row); };
+var dueList = function () { return D.cust.filter(function (c) { return c.active && c.due > 0; }).sort(function (a, b) { return b.due - a.due; }); };
+
+function call(fn, args, ok) {
+  var f = google.script.run.withSuccessHandler(function (r) { ok && ok(r); })
+    .withFailureHandler(function (e) { var m = e.message || String(e); if (m.indexOf('AUTH') > -1) return logout(true); alert(m); });
+  f[fn].apply(f, [TK].concat(args));
+}
+function load() { call('getAll', [], function (r) { D = r; render(); }); }
+function go(v) { V = v; if (D) render(); }
+
+function render() {
+  var own = U.role === 'owner';
+  var TT = own ? T : T.filter(function (t) { return ['dash', 'customer', 'payment', 'due'].indexOf(t[0]) > -1; });
+  $('own').innerHTML = '<i class="fa-regular fa-circle-user"></i>' + esc(U.name) + '<br><small>' + (own ? 'OWNER' : 'STAFF') + '</small><br>' +
+    (own ? '<a onclick="go(\'users\')" title="ইউজার"><i class="fa-solid fa-users-gear"></i></a>' : '') + '<a onclick="pwForm()" title="পাসওয়ার্ড বদলান"><i class="fa-solid fa-key"></i></a><a onclick="logout()" title="লগআউট"><i class="fa-solid fa-right-from-bracket"></i></a>';
+  $('menu').innerHTML = TT.map(function (t) {
+    var c = 'tile' + (t[0] === V ? ' on' : '') + (t[0] === 'due' && V !== 'due' ? ' due' : '');
+    return '<button class="' + c + '" onclick="go(\'' + t[0] + '\')"><i class="fa-solid ' + t[1] + '"></i>' + t[2] + '</button>';
+  }).join('');
+  CH.forEach(function (c) { c.destroy(); }); CH = [];
+  var f = { dash: U.role === 'owner' ? dash : staffHome, users: usersV, customer: customer, package: pack, billing: billing, payment: payment, due: dueV, reminder: remV, report: report };
+  $('view').innerHTML = f[V]();
+  if (V === 'dash' && U.role === 'owner') setTimeout(charts, 0);
+}
+
+function tbl(h, rows, empty) {
+  if (!rows.length) return '<p style="padding:14px;text-align:center;color:#789">' + (empty || 'কিছু পাওয়া যায়নি') + '</p>';
+  return '<div class="tw"><table class="t"><tr>' + h.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr>' +
+    rows.map(function (r) { return '<tr>' + r.map(function (x) { return '<td>' + x + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>';
+}
+function pn(title, body, cls, badge) {
+  return '<div class="pn ' + (cls || '') + '"><h3><span>' + title + '</span>' + (badge ? '<span class="bd">' + badge + '</span>' : '') + '</h3><div>' + body + '</div></div>';
+}
+
+/* ---------- Dashboard ---------- */
+function groups() {
+  var g = {}; D.cust.filter(function (c) { return c.active; }).forEach(function (c) { g[c.fee] = (g[c.fee] || 0) + 1; });
+  var a = Object.keys(g).map(function (k) { return { fee: +k, n: g[k] }; }).sort(function (x, y) { return y.n - x.n; });
+  var top = a.slice(0, 3), rest = a.slice(3).reduce(function (s, x) { return s + x.n; }, 0);
+  if (rest) top.push({ fee: 0, n: rest });
+  return top;
+}
+var COL = ['#1565e8', '#22b45f', '#f5a623', '#94a3b8'];
+
+function dash() {
+  var S = D.stats, d = new Date(), dl = dueList(), rc = D.log.slice(0, 5);
+  var pct = S.billed ? Math.round(S.collected * 100 / S.billed) : 0;
+  var g = groups(), tot = S.total || 1;
+  return '<div class="wel"><div style="display:flex;align-items:center"><i class="fa-solid fa-wifi big"></i><div><h2>স্বাগতম, OWNER!</h2>StarNet ISP Billing System</div></div>' +
+    '<div class="dt"><b><i class="fa-regular fa-calendar"></i> আজ</b><br>' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + '<br>' + d.toLocaleDateString('en-US', { weekday: 'long' }) + '</div></div>' +
+    '<div class="sg" style="margin:12px 0">' +
+    '<div class="sc s1"><i class="fa-solid fa-users"></i><small>মোট গ্রাহক</small><b>' + S.total + '</b><span>+' + S.fresh + ' নতুন</span></div>' +
+    '<div class="sc s2"><i class="fa-solid fa-circle-check"></i><small>মোট আদায়</small><b>' + fm(S.collected) + '</b><span>এই মাস</span></div>' +
+    '<div class="sc s3"><i class="fa-solid fa-circle-exclamation"></i><small>মোট বকেয়া</small><b>' + fm(S.totalDue) + '</b><span>' + S.dueCount + ' জন</span></div>' +
+    '<div class="sc s4"><i class="fa-solid fa-wifi"></i><small>এই মাসে আদায়</small><b>' + pct + '%</b><span>বিলের তুলনায়</span></div></div>' +
+    '<div class="g2" style="grid-template-columns:3fr 2fr">' +
+    pn('মাসিক আদায় ও বকেয়া (গত ৬ মাস)', '<div class="in"><div class="cv"><canvas id="c1"></canvas></div></div>') +
+    pn('প্যাকেজ অনুযায়ী গ্রাহক', '<div class="in" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="cv" style="width:150px;height:150px"><canvas id="c2"></canvas><div class="ctr">' + S.total + '<small>মোট গ্রাহক</small></div></div><div class="lg">' +
+      g.map(function (x, i) { return '<div><i style="background:' + COL[i] + '"></i><b>' + (x.fee ? '৳' + x.fee : 'অন্যান্য') + '</b><br>' + x.n + ' (' + (x.n * 100 / tot).toFixed(1) + '%)</div>'; }).join('') + '</div></div>') + '</div>' +
+    '<div class="g2" style="margin-top:12px">' +
+    pn('<i class="fa-solid fa-clipboard-list"></i> সাম্প্রতিক পেমেন্ট', tbl(['গ্রাহক', 'আইডি', 'টাকা', 'আদায়কারী', 'তারিখ'], rc.map(function (x) { return [esc(x.name), esc(x.id), '<span class="gn">' + fm(x.amt) + '</span>', esc(x.u || '-'), x.d]; }), 'এই অ্যাপ থেকে এখনো পেমেন্ট এন্ট্রি হয়নি')) +
+    pn('<i class="fa-solid fa-bell"></i> বকেয়া রিমাইন্ডার (Top 5)', tbl(['গ্রাহক', 'বকেয়া মাস', 'মোট টাকা'], dl.slice(0, 5).map(function (c) { return [esc(c.name), c.dm + ' মাস', '<span class="rd">' + fm(c.due) + '</span>']; })), 'red', S.dueCount + ' জন') + '</div>' +
+    '<div class="g2" style="margin-top:12px;grid-template-columns:3fr 2fr"><div class="qa"><h3><i class="fa-solid fa-star" style="color:#ffd54a"></i> দ্রুত কাজ</h3><div class="qg">' +
+    '<button class="qb" onclick="addForm()"><i class="fa-solid fa-user-plus" style="color:#1565e8"></i>নতুন গ্রাহক</button>' +
+    '<button class="qb" onclick="payForm()"><i class="fa-solid fa-credit-card" style="color:#14803f"></i>পেমেন্ট এন্ট্রি</button>' +
+    '<button class="qb" onclick="go(\'billing\')"><i class="fa-solid fa-calendar-days" style="color:#e07b00"></i>মাসিক বিল</button>' +
+    '<button class="qb" onclick="go(\'report\')"><i class="fa-solid fa-file-lines" style="color:#6d28d9"></i>রিপোর্ট</button></div></div>' +
+    '<div class="nt"><b><i class="fa-regular fa-lightbulb" style="color:#f5a623"></i> সিস্টেম নোট</b><ul><li>প্রতিমাসে বিল তৈরি করুন</li><li>পেমেন্টের পর বকেয়া আপডেট হবে</li><li>রিমাইন্ডার তালিকা নিয়মিত দেখুন</li><li>SMS পাঠানো আপাতত বন্ধ</li></ul></div></div>';
+}
+
+function charts() {
+  if (!window.Chart) return;
+  Chart.defaults.font.family = 'Hind Siliguri';
+  var m = D.monthly.slice(-6);
+  CH.push(new Chart($('c1'), { type: 'bar', data: { labels: m.map(function (x) { return x.l; }), datasets: [
+    { label: 'আদায়', data: m.map(function (x) { return x.col; }), backgroundColor: '#22b45f' },
+    { label: 'বকেয়া', data: m.map(function (x) { return x.due; }), backgroundColor: '#ef4444' }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end', labels: { usePointStyle: true } } },
+      scales: { x: { ticks: { autoSkip: false, maxRotation: 0 } }, y: { beginAtZero: true, ticks: { callback: function (v) { return v >= 1000 ? v / 1000 + 'K' : v; } } } } } }));
+  var g = groups();
+  CH.push(new Chart($('c2'), { type: 'doughnut', data: { datasets: [{ data: g.map(function (x) { return x.n; }), backgroundColor: COL, borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } }));
+}
+
+/* ---------- অন্যান্য ট্যাব ---------- */
+function mohSel() {
+  var o = '<option value="">সব মহল্লা</option>' + D.mohs.map(function (m) { return '<option' + (m === MF ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('');
+  return '<select class="m" onchange="MF=this.value;render()">' + o + '</select>';
+}
+function byMoh(list) {
+  var g = {}; list.forEach(function (c) { var k = c.moh || ''; (g[k] = g[k] || []).push(c); });
+  return Object.keys(g).sort(function (a, b) { return a === '' ? 1 : b === '' ? -1 : a.localeCompare(b); }).map(function (k) { return { k: k, l: g[k] }; });
+}
+function customer() {
+  var q = Q.trim().toLowerCase(), own = U.role === 'owner';
+  var l = D.cust.filter(function (c) { return (!q || c.name.toLowerCase().indexOf(q) > -1 || cid(c).toLowerCase().indexOf(q) > -1) && (!MF || c.moh === MF); });
+  var body = byMoh(l).map(function (g) {
+    return '<div style="background:#dcecff;padding:6px 12px;font-weight:600;color:#0b57d0">' + (g.k ? esc(g.k) : 'মহল্লা ঠিক করা হয়নি') + ' (' + g.l.length + ')</div>' +
+      tbl(['নাম', 'আইডি', 'ফি', 'বকেয়া', ''], g.l.map(function (c) {
+        return [esc(c.name), esc(cid(c)), c.fee ? fm(c.fee) : '-', c.due ? '<span class="rd">' + fm(c.due) + '</span>' : '<span class="gn">পরিশোধিত</span>',
+          '<button class="btn s" onclick="payForm(' + c.row + ')">পেমেন্ট</button>'];
+      }));
+  }).join('');
+  return pn('গ্রাহক তালিকা (' + l.length + ')', '<div class="in" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn g s" onclick="addForm()"><i class="fa-solid fa-user-plus"></i> নতুন গ্রাহক</button>' + mohSel() + '</div>' +
+    (body || '<p style="padding:14px;text-align:center;color:#789">কিছু পাওয়া যায়নি</p>'));
+}
+function pack() {
+  var g = {}; D.cust.filter(function (c) { return c.active; }).forEach(function (c) { g[c.fee] = (g[c.fee] || 0) + 1; });
+  var rows = Object.keys(g).sort(function (a, b) { return a - b; }).map(function (k) { return ['৳ ' + k, g[k] + ' জন', fm(k * g[k])]; });
+  return pn('প্যাকেজ (মাসিক ফি অনুযায়ী)', tbl(['মাসিক ফি', 'গ্রাহক', 'মাসিক মোট'], rows));
+}
+function billing() {
+  var k = D.months.map(function (m, i) { return m; });
+  var cur = window.BM !== undefined ? window.BM : 0, idx = D.monthly.length - 1 - cur;
+  var rows = D.cust.filter(function (c) { return c.active && c.start <= idx; }).map(function (c) {
+    var p = c.paid[idx]; return [esc(c.name), fm(c.fee), p ? '<span class="gn">' + fm(p) + '</span>' : '-', p >= c.fee ? 'পরিশোধিত' : '<span class="rd">বাকি</span>'];
+  });
+  var sel = '<div class="in"><select class="m" onchange="BM=+this.value;render()">' + k.map(function (m, i) { return '<option value="' + i + '"' + (i === cur ? ' selected' : '') + '>' + m.l + '</option>'; }).join('') + '</select></div>';
+  return pn('মাসিক বিল', sel + tbl(['নাম', 'বিল', 'এই মাসে জমা', 'অবস্থা'], rows));
+}
+function payment() {
+  return pn('পেমেন্ট', '<div class="in"><button class="btn g" onclick="payForm()"><i class="fa-solid fa-money-bill-transfer"></i> নতুন পেমেন্ট এন্ট্রি</button></div>' +
+    tbl(['গ্রাহক', 'টাকা', 'আদায়কারী', 'তারিখ'].concat(U.role === 'owner' ? [''] : []), D.log.map(function (x) { return [esc(x.name), '<span class="gn">' + fm(x.amt) + '</span>', esc(x.u || '-'), x.d].concat(U.role === 'owner' ? [cancelBtn(x.n)] : []); }), 'কোনো এন্ট্রি নেই'));
+}
+function dueV() {
+  var l = dueList().filter(function (c) { return !MF || c.moh === MF; });
+  return pn('বকেয়া হিসাব', '<div class="in">' + mohSel() + '</div>' + tbl(['নাম', 'আইডি', 'মহল্লা', 'বকেয়া মাস', 'বকেয়া টাকা', ''], l.map(function (c) {
+    return [esc(c.name), esc(cid(c)), esc(c.moh || '-'), c.dm + ' মাস', '<span class="rd">' + fm(c.due) + '</span>', '<button class="btn s" onclick="payForm(' + c.row + ')">পেমেন্ট</button>'];
+  })), 'red', l.length + ' জন');
+}
+function msg(c) { return 'প্রিয় ' + c.name + ', আপনার ইন্টারনেট বিল বাবদ ' + c.due + ' টাকা (' + c.dm + ' মাসের) বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করুন। - StarNet ISP'; }
+function remV() {
+  RL = dueList();
+  return pn('বকেয়া রিমাইন্ডার', tbl(['গ্রাহক', 'মাস', 'টাকা', 'বার্তা'], RL.map(function (c, i) {
+    return [esc(c.name), c.dm + (c.dm >= 2 ? ' ⚠' : ''), '<span class="rd">' + fm(c.due) + '</span>', '<button class="btn s" onclick="cp(' + i + ')"><i class="fa-regular fa-copy"></i> কপি</button>'];
+  })), 'red', RL.length + ' জন');
+}
+function cp(i) {
+  var t = msg(RL[i]);
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { alert('কপি হয়েছে'); }, function () { prompt('কপি করুন:', t); });
+}
+function report() {
+  var m = D.monthly.slice(-12).reverse();
+  return collectors() + '<div style="height:12px"></div>' + pn('মাসিক রিপোর্ট (গত ১২ মাস)', tbl(['মাস', 'বিল', 'আদায়', 'বকেয়া'], m.map(function (x) {
+    return [x.l + ' ' + x.y, fm(x.bill), '<span class="gn">' + fm(x.col) + '</span>', '<span class="rd">' + fm(x.due) + '</span>'];
+  })));
+}
+
+/* ---------- আদায়কারী রিপোর্ট ---------- */
+function ymd() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function cancelBtn(n) { return '<button class="btn s" style="background:#c4161c" onclick="cancelPay(' + n + ')">বাতিল</button>'; }
+function cancelPay(n) {
+  if (confirm('এই পেমেন্ট এন্ট্রি বাতিল করবেন? মাসের ঘর থেকে টাকা কমে যাবে।')) call('cancelPayment', [n], load);
+}
+function collectors() {
+  var ci = window.RC || 0, mk = D.months[ci].k, td = ymd(), by = {}, tT = 0, tM = 0;
+  D.all.forEach(function (e) {
+    if (e.x) return;
+    var u = e.u || 'অজানা', b = by[u] = by[u] || { t: 0, n: 0, m: 0 };
+    if (e.iso === td) { b.t += +e.amt; b.n++; tT += +e.amt; }
+    if (e.iso.slice(0, 7) === mk) { b.m += +e.amt; tM += +e.amt; }
+  });
+  var names = Object.keys(by).sort(function (a, b) { return by[b].m - by[a].m; });
+  var sel = '<select class="m" onchange="RC=+this.value;render()">' + D.months.map(function (m, i) { return '<option value="' + i + '"' + (i === ci ? ' selected' : '') + '>' + m.l + '</option>'; }).join('') + '</select>';
+  var cards = names.map(function (u) {
+    var b = by[u];
+    return '<div class="pn" style="margin-bottom:8px"><div class="in" style="display:flex;align-items:center;gap:10px">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:#dcecff;color:#0b57d0;display:flex;align-items:center;justify-content:center;font-weight:600">' + esc(u.slice(0, 2).toUpperCase()) + '</div>' +
+      '<div style="flex:1"><b>' + esc(u) + '</b><br><small style="color:#567">আজ ' + fm(b.t) + ' · ' + b.n + ' জন</small></div>' +
+      '<div style="text-align:right"><b>' + fm(b.m) + '</b><br><small style="color:#567">এই মাস</small></div></div></div>';
+  }).join('') || '<p style="text-align:center;color:#789">এই মাসে এখনো কোনো এন্ট্রি নেই</p>';
+  var recent = D.all.filter(function (e) { return !e.x; }).slice(0, 10);
+  return pn('আদায়কারী রিপোর্ট', '<div class="in">' + sel + '<div class="g2" style="grid-template-columns:1fr 1fr;margin:10px 0">' +
+    '<div class="sc s2"><small>আজ মোট আদায়</small><b>' + fm(tT) + '</b></div><div class="sc s1"><small>নির্বাচিত মাসে মোট</small><b>' + fm(tM) + '</b></div></div>' + cards + '</div>') +
+    '<div style="height:12px"></div>' +
+    pn('সাম্প্রতিক এন্ট্রি', tbl(['গ্রাহক', 'টাকা', 'আদায়কারী', 'তারিখ', ''], recent.map(function (e) {
+      return [esc(e.name), '<span class="gn">' + fm(e.amt) + '</span>', esc(e.u || '-'), e.d, cancelBtn(e.n)];
+    }), 'এখনো কোনো এন্ট্রি নেই'));
+}
+
+/* ---------- ফর্ম ---------- */
+function open_(h) { $('md').innerHTML = h; $('ov').classList.add('on'); }
+function close_() { $('ov').classList.remove('on'); }
+function payForm(row) {
+  var o = D.cust.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).map(function (c) {
+    return '<option value="' + c.row + '"' + (c.row === row ? ' selected' : '') + '>' + esc(c.name) + ' (' + esc(cid(c)) + ')</option>'; }).join('');
+  var mo = D.months.map(function (m) { return '<option value="' + m.k + '">' + m.l + '</option>'; }).join('');
+  var f = row ? D.cust.filter(function (c) { return c.row === row; })[0].fee : '';
+  open_('<h3>পেমেন্ট এন্ট্রি</h3><label>গ্রাহক</label><select id="pr" onchange="$(\'pa\').value=D.cust.filter(function(c){return c.row==this.value}.bind(this))[0].fee">' + o + '</select>' +
+    '<label>মাস</label><select id="pm">' + mo + '</select><label>টাকা</label><input id="pa" type="number" value="' + f + '">' +
+    '<div class="r"><button class="btn" style="background:#789" onclick="close_()">বাতিল</button><button class="btn g" onclick="savePay()">সংরক্ষণ</button></div>');
+  if (!row) $('pr').selectedIndex = -1;
+}
+function savePay() {
+  var r = +$('pr').value, c = D.cust.filter(function (x) { return x.row === r; })[0];
+  if (!c) return alert('গ্রাহক বাছাই করুন');
+  call('addPayment', [{ row: r, name: c.name, id: c.id, amount: +$('pa').value, month: $('pm').value }], function () { close_(); load(); });
+}
+function addForm() {
+  open_('<h3>নতুন গ্রাহক</h3><label>নাম</label><input id="an"><label>আইডি (যেমন 1.DFC@050)</label><input id="ai"><label>মহল্লা (তালিকা থেকে বাছুন বা নতুন লিখুন)</label><input id="am" list="ml" autocomplete="off"><datalist id="ml">' + D.mohs.map(function (m) { return '<option value="' + esc(m) + '">'; }).join('') + '</datalist><label>মাসিক ফি</label><input id="af" type="number" value="500">' +
+    '<label>জয়েনিং তারিখ</label><input id="ad" type="date" value="' + new Date().toISOString().slice(0, 10) + '">' +
+    '<div class="r"><button class="btn" style="background:#789" onclick="close_()">বাতিল</button><button class="btn g" onclick="saveAdd()">যুক্ত করুন</button></div>');
+}
+function saveAdd() {
+  call('addCustomer', [{ name: $('an').value, id: $('ai').value, fee: $('af').value, moh: $('am').value, date: $('ad').value }], function () { close_(); load(); });
+}
+/* ---------- লগিন / স্টাফ হোম / ইউজার ---------- */
+function doLogin() {
+  google.script.run.withSuccessHandler(function (r) {
+    TK = r.token; U = r; try { localStorage.setItem('tk', TK); } catch (e) {}
+    $('lg').classList.remove('on'); $('lp').value = ''; V = 'dash'; load();
+  }).withFailureHandler(function (e) { alert(e.message || e); }).login($('lu').value, $('lp').value);
+}
+function logout(silent) {
+  if (!silent && TK) google.script.run.logout(TK);
+  TK = null; U = null; D = null; try { localStorage.removeItem('tk'); } catch (e) {}
+  $('lg').classList.add('on');
+}
+function staffHome() {
+  var sum = D.log.reduce(function (s, x) { return s + Number(x.amt); }, 0);
+  return '<div class="wel"><div><h2>স্বাগতম, ' + esc(U.name) + '!</h2>বিল কালেকশন</div><div class="dt">আপনার সাম্প্রতিক কালেকশন<br><b>' + fm(sum) + '</b></div></div>' +
+    '<div class="qa" style="margin:12px 0"><h3><i class="fa-solid fa-star" style="color:#ffd54a"></i> দ্রুত কাজ</h3><div class="qg" style="grid-template-columns:1fr 1fr">' +
+    '<button class="qb" onclick="addForm()"><i class="fa-solid fa-user-plus" style="color:#1565e8"></i>নতুন গ্রাহক</button>' +
+    '<button class="qb" onclick="payForm()"><i class="fa-solid fa-credit-card" style="color:#14803f"></i>পেমেন্ট এন্ট্রি</button></div></div>' +
+    pn('আপনার সাম্প্রতিক পেমেন্ট', tbl(['গ্রাহক', 'টাকা', 'মাস', 'তারিখ'], D.log.slice(0, 10).map(function (x) { return [esc(x.name), '<span class="gn">' + fm(x.amt) + '</span>', x.m, x.d]; }), 'এখনো কোনো এন্ট্রি নেই'));
+}
+function usersV() {
+  call('listUsers', [], function (l) {
+    $('ul').innerHTML = tbl(['ইউজার', 'ভূমিকা', ''], l.map(function (x) {
+      return [esc(x.u), x.role === 'owner' ? 'OWNER' : x.role === 'staff' ? 'STAFF' : 'বন্ধ',
+        '<button class="btn s" onclick="userForm(\'' + esc(x.u) + '\',\'' + x.role + '\')">সম্পাদনা</button>'];
+    }));
+  });
+  call('securityInfo', [], function (s) {
+    $('sec').innerHTML = pn('ব্যাকআপ ও নিরাপত্তা', '<div class="in">সর্বশেষ ব্যাকআপ: <b>' + (s.backup ? esc(s.backup) : 'এখনো হয়নি') + '</b><br>' +
+      '<button class="btn g s" style="margin:6px 0" onclick="doBackup()"><i class="fa-solid fa-cloud-arrow-up"></i> এখনই ব্যাকআপ নিন</button><br>' +
+      '<small style="color:#567">প্রতিদিন রাত ২টায় স্বয়ংক্রিয় ব্যাকআপ হয়, শেষ ১৪টি থাকে (Google Drive এর StarNet Backup ফোল্ডারে)।</small></div>' +
+      '<div style="background:#e5f0fa;padding:6px 12px;font-weight:600">সাম্প্রতিক লগিন</div>' +
+      tbl(['সময়', 'ইউজার', 'ফলাফল'], s.logins.map(function (x) { return [x.t, esc(x.u), x.s === 'সফল' ? '<span class="gn">সফল</span>' : '<span class="rd">' + esc(x.s) + '</span>']; }), 'কোনো তথ্য নেই'));
+  });
+  return pn('ইউজার ম্যানেজমেন্ট', '<div class="in"><button class="btn g s" onclick="userForm()">+ নতুন ইউজার</button></div><div id="ul"></div>') + '<div style="height:12px"></div><div id="sec"></div>';
+}
+function userForm(u, role) {
+  open_('<h3>' + (u ? 'ইউজার সম্পাদনা' : 'নতুন ইউজার') + '</h3><label>ইউজারনেম (ইংরেজি ছোট হাতের)</label><input id="uu" value="' + (u || '') + '"' + (u ? ' readonly' : '') + '>' +
+    '<label>পাসওয়ার্ড' + (u ? ' (খালি রাখলে বদলাবে না)' : ' (কমপক্ষে ৬ অক্ষর)') + '</label><input id="up" type="text" autocomplete="off">' +
+    '<label>ভূমিকা</label><select id="ur"><option value="staff"' + (role === 'staff' ? ' selected' : '') + '>STAFF</option><option value="owner"' + (role === 'owner' ? ' selected' : '') + '>OWNER</option><option value="off"' + (role === 'off' ? ' selected' : '') + '>বন্ধ</option></select>' +
+    '<div class="r"><button class="btn" style="background:#789" onclick="close_()">বাতিল</button><button class="btn g" onclick="saveUser()">সংরক্ষণ</button></div>');
+}
+function saveUser() {
+  call('saveUser', [{ u: $('uu').value, p: $('up').value, role: $('ur').value }], function () { close_(); render(); });
+}
+function doBackup() { call('backupNow', [], function (t) { alert('ব্যাকআপ হয়েছে: ' + t); render(); }); }
+function pwForm() {
+  open_('<h3>পাসওয়ার্ড বদলান</h3><label>বর্তমান পাসওয়ার্ড</label><input id="p0" type="password" autocomplete="current-password">' +
+    '<label>নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="p1" type="password" autocomplete="new-password">' +
+    '<div class="r"><button class="btn" style="background:#789" onclick="close_()">বাতিল</button><button class="btn g" onclick="savePw()">সংরক্ষণ</button></div>');
+}
+function savePw() { call('changePassword', [$('p0').value, $('p1').value], function () { close_(); alert('পাসওয়ার্ড বদলানো হয়েছে'); }); }
+try { TK = localStorage.getItem('tk'); } catch (e) {}
+if (TK) call('whoami', [], function (r) { U = r; $('lg').classList.remove('on'); load(); });
+</script>
+</body>
+</html>
